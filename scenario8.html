@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NurtureEd • Scenario Flow</title>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      body {
+        background: linear-gradient(135deg, #eafaf1, #e3f2fd);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        color: #2c3e50;
+      }
+
+      .container {
+        display: flex;
+        justify-content: center;
+        padding: 40px 20px;
+      }
+
+      /* WIDER CARD */
+      .card {
+        width: 100%;
+        max-width: 1000px;
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(14px);
+        padding: 32px;
+        border-radius: 24px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
+      }
+
+      /* SCREENS */
+      .screen {
+        display: none;
+      }
+      .screen.active {
+        display: block;
+        animation: fade 0.5s ease;
+      }
+
+      @keyframes fade {
+        from {
+          opacity: 0;
+          transform: translateY(15px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* BIGGER IMAGE */
+      img {
+        width: 100%;
+        height: 340px;
+        object-fit: cover;
+        border-radius: 16px;
+        margin-bottom: 20px;
+      }
+
+      h2 {
+        margin-bottom: 10px;
+      }
+
+      .desc {
+        color: #6b7c93;
+        margin-bottom: 20px;
+        line-height: 1.6;
+      }
+
+      /* BUTTONS */
+      .main-btn {
+        width: 100%;
+        padding: 14px;
+        background: #2c7a7b;
+        color: white;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+      }
+
+      /* BACK BUTTON */
+      .back {
+        margin-bottom: 20px;
+        cursor: pointer;
+        color: #2c7a7b;
+        font-weight: 500;
+      }
+
+      /* OPTION BLOCK */
+      .option-block {
+        margin-bottom: 16px;
+        background: rgba(255, 255, 255, 0.95);
+        padding: 16px;
+        border-radius: 14px;
+      }
+
+      /* FLEX FIX */
+      .option-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .option-text {
+        font-weight: 500;
+      }
+
+      /* RIGHT-ALIGNED COUNTER */
+      .counter {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .counter button {
+        width: 32px;
+        height: 32px;
+        border: none;
+        border-radius: 8px;
+        background: #e6fffa;
+        cursor: pointer;
+      }
+
+      .bar {
+        height: 8px;
+        background: #eee;
+        margin-top: 10px;
+        border-radius: 10px;
+      }
+
+      .fill {
+        height: 100%;
+        width: 0%;
+        background: #2c7a7b;
+        border-radius: 10px;
+      }
+
+      /* REVIEW */
+      .insight {
+        background: #f0fdfc;
+        padding: 16px;
+        border-radius: 14px;
+        margin-bottom: 14px;
+      }
+
+      .correct {
+        border-left: 5px solid #2c7a7b;
+      }
+      .wrong {
+        border-left: 5px solid #e53e3e;
+      }
+
+      /* DASHBOARD BTN */
+      .dashboard-btn {
+        margin-top: 20px;
+        text-align: center;
+        padding: 12px;
+        border-radius: 12px;
+        background: #edf2f7;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="card">
+        <!-- SCREEN 1 -->
+        <div class="screen active" id="screen1">
+          <img
+            src="./sayingno_seekinghelp.png"
+          />
+
+          <h2>Assertiveness – Saying NO & Seeking Help</h2>
+          <p class="desc">
+            Someone you know tells you to keep a secret about something that
+            made you feel uncomfortable. They insist that you should not tell
+            anyone and may even warn you that sharing it could cause trouble.
+            This makes you feel confused, scared, and unsure about what to do.
+            You start thinking whether keeping the secret is the right thing or
+            if you should tell someone. <br /><br />
+
+            The pressure to stay silent makes you anxious. Situations like this
+            require understanding the difference between safe and unsafe secrets
+            and knowing when it is important to seek help from a trusted person.
+          </p>
+
+          <button class="main-btn" onclick="next(2)">Start Discussion</button>
+        </div>
+
+        <!-- SCREEN 2 -->
+        <div class="screen" id="screen2">
+          <div class="back" onclick="next(1)">← Back</div>
+
+          <h2>What should you do in this situation?</h2>
+
+          <!-- OPTION -->
+          <div class="option-block">
+            <div class="option-row">
+              <div class="option-text">A. Keep the secret</div>
+              <div class="counter">
+                <button onclick="change(0, -1)">−</button>
+                <span id="c0">0</span>
+                <button onclick="change(0, 1)">+</button>
+              </div>
+            </div>
+            <div class="bar"><div class="fill" id="f0"></div></div>
+          </div>
+
+          <div class="option-block">
+            <div class="option-row">
+              <div class="option-text">B. Tell a trusted adult immediately</div>
+              <div class="counter">
+                <button onclick="change(1, -1)">−</button>
+                <span id="c1">0</span>
+                <button onclick="change(1, 1)">+</button>
+              </div>
+            </div>
+            <div class="bar"><div class="fill" id="f1"></div></div>
+          </div>
+
+          <div class="option-block">
+            <div class="option-row">
+              <div class="option-text">C. Ignore it</div>
+              <div class="counter">
+                <button onclick="change(2, -1)">−</button>
+                <span id="c2">0</span>
+                <button onclick="change(2, 1)">+</button>
+              </div>
+            </div>
+            <div class="bar"><div class="fill" id="f2"></div></div>
+          </div>
+
+          <div class="option-block">
+            <div class="option-row">
+              <div class="option-text">D. Tell only your friends</div>
+              <div class="counter">
+                <button onclick="change(3, -1)">−</button>
+                <span id="c3">0</span>
+                <button onclick="change(3, 1)">+</button>
+              </div>
+            </div>
+            <div class="bar"><div class="fill" id="f3"></div></div>
+          </div>
+
+          <button class="main-btn" onclick="next(3)">Submit & Review</button>
+        </div>
+
+        <!-- SCREEN 3 -->
+        <div class="screen" id="screen3">
+          <h2>Review & Insights</h2>
+
+          <div class="insight correct">
+            <b>B. Tell a trusted adult immediately</b>
+            <p>
+              Telling a trusted adult immediately is the best action. It ensures
+              your safety and allows responsible people to handle the situation
+              properly. Trusted adults can guide you, protect you, and take
+              necessary steps to prevent harm, making this the safest and most
+              appropriate choice.
+            </p>
+          </div>
+
+          <div class="insight wrong">
+            <b>A. Keep the secret</b>
+            <p>
+              Keeping the secret might seem like the easiest option, but it can
+              put you at risk. Unsafe secrets should never be kept, especially
+              if they make you uncomfortable. Staying silent allows the
+              situation to continue and prevents you from getting the help you
+              need.
+            </p>
+          </div>
+
+          <div class="insight wrong">
+            <b>C. Ignore it</b>
+            <p>
+              Ignoring the situation does not solve the problem. It can lead to
+              ongoing discomfort or even danger. Facing the issue by speaking up
+              is important, as ignoring it only delays help and increases stress
+              or confusion.
+            </p>
+          </div>
+
+          <div class="insight wrong">
+            <b>D. Tell only your friends</b>
+            <p>
+              Telling only friends may provide temporary emotional support, but
+              they may not be able to handle the situation properly. Trusted
+              adults are better equipped to take action and ensure your safety,
+              which is why this option is not the most effective solution.
+            </p>
+          </div>
+
+          <div class="dashboard-btn" onclick="goDashboard()">
+            ← Back to Dashboard
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let data = [0, 0, 0, 0];
+
+      function next(n) {
+        document
+          .querySelectorAll(".screen")
+          .forEach((s) => s.classList.remove("active"));
+        document.getElementById("screen" + n).classList.add("active");
+      }
+
+      function change(i, val) {
+        data[i] = Math.max(0, data[i] + val);
+        document.getElementById("c" + i).innerText = data[i];
+        update();
+      }
+
+      function update() {
+        let total = data.reduce((a, b) => a + b, 0);
+        data.forEach((v, i) => {
+          let p = total ? (v / total) * 100 : 0;
+          document.getElementById("f" + i).style.width = p + "%";
+        });
+      }
+
+      /* DASHBOARD NAV */
+      function goDashboard() {
+        alert("Navigate to dashboard here");
+      }
+    </script>
+  </body>
+</html>
