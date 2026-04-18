@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NurtureEd — Join a Class</title>
+  <link rel="stylesheet" href="student.css" />
+</head>
+<body>
+  <div class="bg-mesh"></div>
+
+  <main class="join-page">
+    <div class="join-wrapper animate-scale-in">
+
+      <!-- ── Left brand panel ── -->
+      <div class="join-brand">
+        <div class="join-brand-logo">
+          <div class="logo-icon">N</div>
+          <span>NurtureEd</span>
+        </div>
+        <div class="join-brand-content">
+          <h2 class="join-brand-title">
+            Learning that<br/>
+            <em>grows with you</em>
+          </h2>
+          <p class="join-brand-desc">
+            An AI-powered classroom experience designed to help every student
+            find their pace and reach their potential.
+          </p>
+        </div>
+        <div class="join-features">
+          <div class="join-feature-item">
+            <span class="join-feature-dot"></span>
+            <span>Personalised AI tutoring</span>
+          </div>
+          <div class="join-feature-item">
+            <span class="join-feature-dot"></span>
+            <span>Real-time session summaries</span>
+          </div>
+          <div class="join-feature-item">
+            <span class="join-feature-dot"></span>
+            <span>Anonymous Q&amp;A with your teacher</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Right form panel ── -->
+      <div class="join-form-panel">
+        <div class="join-form-header animate-fade-up anim-delay-1">
+          <div class="mobile-brand">
+            <div class="navbar-logo">N</div>
+            <span class="navbar-name">NurtureEd</span>
+          </div>
+          <h2>Join your class</h2>
+          <p>Enter your name and the 6-character class code from your teacher.</p>
+        </div>
+
+        <div class="join-form">
+          <div class="form-group animate-fade-up anim-delay-2">
+            <label class="form-label" for="studentName">Your Name</label>
+            <input class="form-input" type="text" id="studentName"
+              placeholder="e.g. Priya Sharma" autocomplete="name" spellcheck="false"/>
+            <div id="errName" class="form-error"></div>
+          </div>
+
+          <div class="form-group animate-fade-up anim-delay-3">
+            <label class="form-label" for="classCode">Class Code</label>
+            <input class="form-input form-input-code" type="text" id="classCode"
+              placeholder="e.g. AB12CD" autocomplete="off" spellcheck="false"
+              maxlength="6" oninput="this.value=this.value.toUpperCase()"/>
+            <div id="errCode" class="form-error"></div>
+          </div>
+
+          <div id="joinError" style="display:none;margin-top:4px;font-size:0.82rem;color:#EF4444;
+            background:rgba(239,68,68,0.08);border-radius:8px;padding:10px 14px;"></div>
+
+          <button type="button" class="btn btn-primary btn-full animate-fade-up anim-delay-5"
+            id="joinBtn" onclick="joinClass()">
+            Join Class →
+          </button>
+        </div>
+
+        <div class="join-form-footer animate-fade-up anim-delay-5">
+          By joining, you agree to NurtureEd's student guidelines and learning policies.
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script type="module">
+    import { db, auth } from "./firebase-config.js";
+    import { doc, getDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+    // Pre-fill name from Firebase if logged in
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) return;
+      const snap = await getDoc(doc(db, "users", user.uid));
+      if (snap.exists() && snap.data().name) {
+        document.getElementById("studentName").value = snap.data().name;
+      }
+    });
+
+    window.joinClass = async function () {
+      const nameEl  = document.getElementById("studentName");
+      const codeEl  = document.getElementById("classCode");
+      const errName = document.getElementById("errName");
+      const errCode = document.getElementById("errCode");
+      const errBox  = document.getElementById("joinError");
+      const btn     = document.getElementById("joinBtn");
+
+      errName.style.display = "none";
+      errCode.style.display = "none";
+      errBox.style.display  = "none";
+
+      const name = nameEl.value.trim();
+      const code = codeEl.value.trim().toUpperCase();
+      let valid  = true;
+
+      if (!name) {
+        errName.textContent = "Please enter your name.";
+        errName.style.display = "block";
+        valid = false;
+      }
+      if (code.length !== 6) {
+        errCode.textContent = "Class code must be 6 characters.";
+        errCode.style.display = "block";
+        valid = false;
+      }
+      if (!valid) return;
+
+      btn.disabled = true;
+      btn.textContent = "Joining…";
+
+      try {
+        // Look up class in Firestore
+        const classSnap = await getDoc(doc(db, "classes", code));
+
+        if (!classSnap.exists()) {
+          errBox.textContent = "❌ Class not found. Check the code with your teacher and try again.";
+          errBox.style.display = "block";
+          btn.disabled = false;
+          btn.textContent = "Join Class →";
+          return;
+        }
+
+        const classData = classSnap.data();
+        const user = auth.currentUser;
+
+        // Add student UID to class doc
+        if (user) {
+          await updateDoc(doc(db, "classes", code), {
+            students: arrayUnion(user.uid)
+          });
+          await updateDoc(doc(db, "users", user.uid), { classId: code });
+        }
+
+        // Persist to sessionStorage for dashboard
+        sessionStorage.setItem("studentName",  name);
+        sessionStorage.setItem("classCode",    code);
+        sessionStorage.setItem("className",    classData.className  || "");
+        sessionStorage.setItem("section",      classData.section    || "");
+        sessionStorage.setItem("activeModule", classData.activeModule || "");
+        sessionStorage.setItem("teacherUid",   classData.teacherUid  || "");
+
+        window.location.href = "studentdashboard.html";
+
+      } catch (err) {
+        errBox.textContent = "Error: " + err.message;
+        errBox.style.display = "block";
+        btn.disabled = false;
+        btn.textContent = "Join Class →";
+      }
+    };
+  </script>
+
+  <script type="module" src="./auth-state.js"></script>
+</body>
+</html>
