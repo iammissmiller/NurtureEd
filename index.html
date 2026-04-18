@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NurtureEd</title>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+body {
+  height: 100vh;
+  overflow: hidden;
+  background: linear-gradient(135deg, #eafaf1, #e3f2fd);
+  display: flex;
+  flex-direction: column;
+  color: #2c3e50;
+  position: relative;
+}
+
+/* BLOBS */
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(40px);
+  opacity: 0.6;
+  z-index: 0;
+}
+
+.blob1 {
+  width: 260px;
+  height: 260px;
+  background: #a8edea;
+  top: 15%;
+  left: 20%;
+}
+
+.blob2 {
+  width: 300px;
+  height: 300px;
+  background: #cfd9ff;
+  bottom: 10%;
+  right: 15%;
+}
+
+/* NAVBAR */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 50px;
+  z-index: 2;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #2c7a7b;
+}
+
+.login-btn {
+  padding: 8px 18px;
+  border-radius: 10px;
+  border: none;
+  background: white;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  transition: 0.2s;
+}
+
+.login-btn:hover {
+  transform: translateY(-1px);
+}
+
+/* HERO WRAPPER */
+.hero-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 2;
+}
+
+/* HERO BOX */
+.hero-box {
+  width: 100%;
+  max-width: 700px;
+  background: rgba(255,255,255,0.75);
+  backdrop-filter: blur(16px);
+  border-radius: 24px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+
+  padding: 60px 50px;
+  gap: 12px;
+
+  animation: fadeIn 0.8s ease;
+}
+
+/* TEXT */
+.hero-box h1 {
+  font-size: 2.8rem;
+  line-height: 1.2;
+}
+
+.highlight {
+  color: #2c7a7b;
+}
+
+.hero-box p {
+  color: #6b7c93;
+  font-size: 1rem;
+}
+
+.subtext {
+  font-size: 0.85rem;
+  color: #8fa3b0;
+  margin-bottom: 20px;
+}
+
+/* BUTTONS */
+.buttons {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.btn {
+  padding: 14px 22px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  transition: 0.25s;
+}
+
+.teacher {
+  background: #a8edea;
+  color: #05595b;
+}
+
+.student {
+  background: #cfd9ff;
+  color: #2b2e83;
+}
+
+.btn:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+/* FEATURE LINE */
+.feature-line {
+  margin-top: 15px;
+  font-size: 0.85rem;
+  color: #7a8f9a;
+}
+
+/* ANIMATION */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* MOBILE */
+@media (max-width: 600px) {
+  .navbar {
+    padding: 15px 20px;
+  }
+
+  .hero-box {
+    padding: 40px 25px;
+  }
+
+  .hero-box h1 {
+    font-size: 2.1rem;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- BLOBS -->
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+
+<!-- NAVBAR -->
+<div class="navbar">
+  <div class="logo">NurtureEd</div>
+  <button class="login-btn">Login</button>
+</div>
+
+<!-- HERO -->
+<div class="hero-wrapper">
+  <div class="hero-box">
+
+    <h1>
+      Where learning feels <span class="highlight">safe</span>, simple, and human
+    </h1>
+
+    <p>
+      A supportive digital space where students and teachers connect,
+      understand, and grow together.
+    </p>
+
+    <div class="subtext">
+      Designed for comfort • Built for growth
+    </div>
+
+    <div class="buttons">
+      <button class="btn teacher" onclick="goToTeacher()">
+        👩‍🏫 Teacher
+      </button>
+
+      <button class="btn student" onclick="goToStudent()">
+        🎓 Student
+      </button>
+    </div>
+
+    <div class="feature-line">
+      Safe • Simple • Supportive
+    </div>
+
+  </div>
+</div>
+
+<script>
+function goToTeacher() {
+  window.location.href = "teacher.html";
+}
+
+function goToStudent() {
+  window.location.href = "student.html";
+}
+</script>
+
+</body>
+</html>
