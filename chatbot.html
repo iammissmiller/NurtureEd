@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Assistant</title>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #eafaf1, #e3f2fd);
+  display: flex;
+  flex-direction: column;
+  color: #2c3e50;
+  overflow : hidden;
+
+  /* FIX: prevents content going under navbar */
+  padding-top: 70px;
+}
+
+/* ================= NAVBAR (MATCHED) ================= */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 14px 40px;
+
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(14px);
+
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+
+  z-index: 1000;
+}
+
+.logo {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #2c7a7b;
+}
+
+.nav-links {
+  display: flex;
+  gap: 30px;
+}
+
+.nav-links a {
+  text-decoration: none;
+  font-size: 0.9rem;
+  color: #6b7c93;
+  position: relative;
+}
+
+.nav-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.login-btn {
+  padding: 8px 16px;
+  border-radius: 10px;
+  border: none;
+  background: rgba(255,255,255,0.8);
+  cursor: pointer;
+}
+
+.login-btn:hover {
+  background: white;
+}
+
+/* ================= CHAT ================= */
+
+.chat-wrapper {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.chat-box {
+  width: 100%;
+  max-width: 800px;
+  height: 85vh;
+
+  background: rgba(255,255,255,0.75);
+  backdrop-filter: blur(16px);
+
+  border-radius: 24px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.chat-header {
+  padding: 18px;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.chat-title {
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.chat-sub {
+  font-size: 0.8rem;
+  color: #7a8f9a;
+}
+
+.chat-messages {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.message {
+  margin-bottom: 14px;
+  max-width: 70%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+}
+
+.user {
+  background: #cfd9ff;
+  align-self: flex-end;
+}
+
+.bot {
+  background: #eef7f7;
+  align-self: flex-start;
+}
+
+.chat-input-area {
+  display: flex;
+  padding: 15px;
+  border-top: 1px solid rgba(0,0,0,0.05);
+}
+
+.chat-input {
+  flex: 1;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+}
+
+.send-btn {
+  margin-left: 10px;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #2c7a7b, #3aa6a6);
+  color: white;
+  cursor: pointer;
+}
+
+.suggestions {
+  padding: 10px 20px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.suggestion {
+  background: #f1f5f9;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<!-- MATCHED NAVBAR -->
+<div class="navbar">
+  <div class="logo">NurtureEd</div>
+
+  <div class="nav-actions">
+    <button class="login-btn" onclick="goHome()">Home</button>
+  </div>
+</div>
+
+<div class="chat-wrapper">
+  <div class="chat-box">
+
+    <div class="chat-header">
+      <div class="chat-title">Private Assistant</div>
+      <div class="chat-sub">This space is private. Share only what you’re comfortable with.</div>
+    </div>
+
+    <div class="chat-messages" id="chat"></div>
+
+    <div class="suggestions">
+      <div class="suggestion" onclick="quickMsg('Someone is messaging me weird things')">Online issue</div>
+      <div class="suggestion" onclick="quickMsg('I feel uncomfortable around someone')">Personal safety</div>
+      <div class="suggestion" onclick="quickMsg('Is this normal for my body?')">Body awareness</div>
+    </div>
+
+    <div class="chat-input-area">
+      <input id="input" class="chat-input" placeholder="Type here..." />
+      <button class="send-btn" onclick="sendMessage()">Send</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const chat = document.getElementById("chat");
+
+function addMessage(text, type) {
+  const msg = document.createElement("div");
+  msg.className = "message " + type;
+  msg.innerText = text;
+  chat.appendChild(msg);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+addMessage(
+  "You can talk about anything here. I’ll help you think through it calmly.",
+  "bot"
+);
+
+function quickMsg(text){
+  document.getElementById("input").value = text;
+  sendMessage();
+}
+
+function sendMessage() {
+  const input = document.getElementById("input");
+  const text = input.value.trim();
+  if (!text) return;
+
+  addMessage(text, "user");
+  input.value = "";
+
+  setTimeout(() => {
+    const reply = generateReply(text);
+    addMessage(reply, "bot");
+  }, 400);
+}
+
+function generateReply(msg) {
+  msg = msg.toLowerCase();
+
+  if (msg.includes("message") || msg.includes("online")) {
+    return "That sounds uncomfortable. Is this person someone you know?";
+  }
+
+  if (msg.includes("uncomfortable")) {
+    return "You're right to notice that feeling. Want to talk more about it?";
+  }
+
+  if (msg.includes("body")) {
+    return "It's okay to ask. What specifically are you worried about?";
+  }
+
+  return "I understand. Tell me a bit more.";
+}
+
+/* NAVIGATION */
+function goHome() {
+  window.location.href = "index.html";
+}
+
+document.getElementById("input").addEventListener("keypress", function(e){
+  if(e.key === "Enter") sendMessage();
+});
+</script>
+
+</body>
+</html>
