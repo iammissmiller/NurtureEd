@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NurtureEd - Teacher Dashboard</title>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg, #eafaf1, #e3f2fd);
+  color: #2c3e50;
+}
+
+/* BLOBS */
+.blob {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(40px);
+  opacity: 0.5;
+}
+
+.blob1 {
+  width: 260px;
+  height: 260px;
+  background: #a8edea;
+  top: 10%;
+  left: 10%;
+}
+
+.blob2 {
+  width: 300px;
+  height: 300px;
+  background: #cfd9ff;
+  bottom: 10%;
+  right: 10%;
+}
+
+/* NAVBAR */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 14px 24px;
+  background: rgba(255,255,255,0.9);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid #e6eef2;
+}
+
+.logo {
+  font-weight: 600;
+  color: #2c7a7b;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.class-info {
+  font-size: 0.8rem;
+  color: #6b7c93;
+}
+
+.session-pill {
+  background: #e8f7f6;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+}
+
+/* HERO */
+.hero {
+  max-width: 1100px;
+  margin: 20px auto;
+  padding: 18px 20px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+}
+
+.hero h2 {
+  font-size: 1.4rem;
+}
+
+.hero p {
+  font-size: 0.85rem;
+  color: #6b7c93;
+}
+
+.primary-btn {
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: none;
+  background: #2c7a7b;
+  color: white;
+  cursor: pointer;
+}
+
+/* CONTAINER */
+.container {
+  max-width: 1100px;
+  margin: auto;
+  padding: 20px;
+}
+
+/* STATS */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.stat {
+  background: rgba(255,255,255,0.7);
+  padding: 14px;
+  border-radius: 14px;
+  text-align: center;
+}
+
+.stat-number {
+  font-size: 1.4rem;
+  color: #2c7a7b;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: #6b7c93;
+}
+
+/* GRID */
+.grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 20px;
+}
+
+/* CARD */
+.card {
+  background: rgba(255,255,255,0.75);
+  padding: 18px;
+  border-radius: 16px;
+}
+
+/* MODULE */
+.modules-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.module {
+  padding: 14px;
+  border-radius: 14px;
+  background: #f4f8fb;
+  cursor: pointer;
+}
+
+.module:hover {
+  background: #a8edea;
+}
+
+.module-icon {
+  font-size: 1.2rem;
+}
+
+.module-title {
+  font-size: 0.9rem;
+}
+
+.module-desc {
+  font-size: 0.75rem;
+  color: #6b7c93;
+}
+
+/* QUESTIONS */
+.question {
+  padding: 12px;
+  background: #f4f8fb;
+  border-radius: 12px;
+  margin-bottom: 10px;
+}
+
+.question-header {
+  font-size: 0.7rem;
+  color: #6b7c93;
+  display: flex;
+  justify-content: space-between;
+}
+
+.actions {
+  margin-top: 6px;
+  display: flex;
+  gap: 6px;
+}
+
+.actions button {
+  flex: 1;
+  padding: 6px;
+  font-size: 0.7rem;
+  border: none;
+  border-radius: 6px;
+  background: #e8f1f5;
+}
+
+.actions button:hover {
+  background: #a8edea;
+}
+
+.guide {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 0.8rem;
+  color: #6b7c93;
+}
+
+/* MOBILE */
+@media (max-width: 800px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+
+<!-- NAVBAR -->
+<div class="navbar">
+  <div class="logo">NurtureEd</div>
+  <div class="nav-right">
+    <div class="class-info">Grade 8A • NE-204</div>
+    <div id="sessionPill" class="session-pill">Not Started</div>
+  </div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div>
+    <h2>Welcome back</h2>
+    <p>Start a session or address student concerns</p>
+  </div>
+  <button class="primary-btn" onclick="startSession()">Start Session</button>
+</div>
+
+<div class="container">
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-number">3</div>
+      <div class="stat-label">Modules</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number">2</div>
+      <div class="stat-label">Questions</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number">0</div>
+      <div class="stat-label">Sessions</div>
+    </div>
+  </div>
+
+  <div class="grid">
+
+    <!-- MODULES -->
+    <div class="card">
+      <h3>Learning Modules</h3>
+
+      <div class="modules-grid">
+        <div class="module" onclick="startModule(this,'Digital Safety')">
+          <div class="module-icon">🌐</div>
+          <div class="module-title">Digital Safety</div>
+          <div class="module-desc">Online risks</div>
+        </div>
+
+        <div class="module" onclick="startModule(this,'Body Awareness')">
+          <div class="module-icon">🧍</div>
+          <div class="module-title">Body Awareness</div>
+          <div class="module-desc">Boundaries</div>
+        </div>
+
+        <div class="module" onclick="startModule(this,'Personal Safety')">
+          <div class="module-icon">🛡️</div>
+          <div class="module-title">Personal Safety</div>
+          <div class="module-desc">Real-world</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUESTIONS -->
+    <div class="card">
+      <h3>Student Questions</h3>
+
+      <div class="question">
+        <div class="question-header">
+          <span>Anonymous</span>
+          <span>New</span>
+        </div>
+        <div>What should I do if someone threatens me online?</div>
+        <div class="actions">
+          <button onclick="discuss()">Discuss</button>
+          <button onclick="markDone(this)">Resolved</button>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="question-header">
+          <span>Anonymous</span>
+          <span>New</span>
+        </div>
+        <div>Is it safe to share photos?</div>
+        <div class="actions">
+          <button onclick="discuss()">Discuss</button>
+          <button onclick="markDone(this)">Resolved</button>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="guide">
+    Start a module → explore situations → guide students
+  </div>
+
+</div>
+
+<script>
+function startSession() {
+  document.getElementById("sessionPill").innerText = "Session Started";
+}
+
+function startModule(el, name) {
+  document.querySelectorAll(".module").forEach(m => m.style.border = "none");
+  el.style.border = "2px solid #2c7a7b";
+  document.getElementById("sessionPill").innerText = "Active: " + name;
+}
+
+function discuss() {
+  alert("Start discussion with students.");
+}
+
+function markDone(btn) {
+  btn.closest(".question").style.opacity = "0.5";
+}
+</script>
+
+</body>
+</html>
