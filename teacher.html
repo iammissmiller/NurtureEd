@@ -32,6 +32,8 @@ body {
   background: #a8edea;
   top: 10%;
   left: 10%;
+  filter: blur(60px);
+  opacity: 0.25;
 }
 
 .blob2 {
@@ -163,16 +165,20 @@ body {
 
 /* GRID */
 .grid {
-  display: grid;
-  grid-template-columns: 1.2fr 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 20px;
 }
 
 /* CARD */
 .card {
   background: rgba(255,255,255,0.75);
-  padding: 18px;
+  padding: 20px;
   border-radius: 16px;
+}
+
+.card:first-child {
+  margin-bottom: 10px;
 }
 
 /* MODULE */
@@ -333,7 +339,6 @@ body {
   <div class="logo">NurtureEd</div>
   <div class="nav-right">
     <div class="class-info">Grade 8A • NE-204</div>
-    <div id="sessionPill" class="session-pill">Not Started</div>
     <button class="logout-btn" id="logoutBtn">🚪 Logout</button>
   </div>
 </div>
@@ -343,13 +348,6 @@ body {
   <div>
     <h2>Welcome back</h2>
     <p>Create a class or address student concerns</p>
-  </div>
-  <div>
-    <div class="class-create-row">
-      <input id="className" type="text" placeholder="Class name e.g. Grade 8A" />
-      <button id="createClassBtn" onclick="createClass()">+ Create Class</button>
-    </div>
-    <div id="classCodeDisplay"></div>
   </div>
 </div>
 
