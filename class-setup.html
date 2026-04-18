@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NurtureEd – Class Setup</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&family=DM+Serif+Display&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box;font-family:'DM Sans',sans-serif;}
+body{
+  min-height:100vh;
+  background:linear-gradient(135deg,#eafaf1,#e3f2fd);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  color:#2c3e50;
+}
+
+.blob{position:fixed;border-radius:50%;filter:blur(50px);opacity:0.45;z-index:0;}
+.blob1{width:300px;height:300px;background:#a8edea;top:5%;left:5%;}
+.blob2{width:360px;height:360px;background:#cfd9ff;bottom:5%;right:5%;}
+
+.card{
+  position:relative;z-index:2;
+  background:rgba(255,255,255,0.85);
+  backdrop-filter:blur(18px);
+  border-radius:28px;
+  box-shadow:0 24px 60px rgba(0,0,0,0.09);
+  padding:52px 44px;
+  width:100%;max-width:480px;
+  display:flex;flex-direction:column;gap:0;
+}
+
+.logo{
+  font-family:'DM Serif Display',serif;
+  font-size:1.5rem;color:#2c7a7b;
+  text-align:center;margin-bottom:6px;
+}
+
+.subtitle{
+  text-align:center;font-size:0.85rem;color:#8fa3b0;margin-bottom:32px;
+}
+
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:18px;}
+.field label{font-size:0.8rem;font-weight:600;color:#4a6274;letter-spacing:0.4px;}
+
+input, select{
+  padding:13px 16px;
+  border:1.5px solid #dde8ed;
+  border-radius:13px;
+  font-size:0.95rem;
+  background:#f7fbfc;
+  outline:none;
+  color:#2c3e50;
+  transition:border 0.2s, background 0.2s;
+  font-family:'DM Sans',sans-serif;
+}
+input:focus, select:focus{border-color:#2c7a7b;background:white;}
+select{cursor:pointer;}
+
+.hint{font-size:0.72rem;color:#aab8c2;margin-top:4px;}
+
+.code-preview{
+  background:#e8f7f6;
+  border-radius:14px;
+  padding:16px 20px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:20px;
+}
+.code-label{font-size:0.75rem;color:#05595b;font-weight:600;}
+.code-value{
+  font-size:1.5rem;font-weight:700;letter-spacing:4px;
+  color:#05595b;font-family:monospace;
+}
+
+.btn{
+  width:100%;padding:14px;border:none;border-radius:14px;
+  background:#2c7a7b;color:white;
+  font-size:1rem;font-weight:600;cursor:pointer;
+  font-family:'DM Sans',sans-serif;
+  transition:0.25s;
+  margin-top:4px;
+}
+.btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 20px rgba(44,122,123,0.28);}
+.btn:disabled{opacity:0.6;cursor:not-allowed;}
+
+.steps{
+  display:flex;justify-content:center;gap:8px;
+  margin-bottom:28px;
+}
+.step{
+  width:8px;height:8px;border-radius:50%;background:#dde8ed;transition:0.3s;
+}
+.step.active{background:#2c7a7b;width:24px;border-radius:4px;}
+</style>
+</head>
+<body>
+
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+
+<div class="card">
+  <div class="logo">NurtureEd</div>
+  <div class="subtitle">Set up today's class before starting</div>
+
+  <div class="steps">
+    <div class="step active" id="s1"></div>
+    <div class="step" id="s2"></div>
+    <div class="step" id="s3"></div>
+  </div>
+
+  <!-- STEP 1: Class Name & Section -->
+  <div id="step1">
+    <div class="field">
+      <label>CLASS NAME</label>
+      <input id="className" type="text" placeholder="e.g. Grade 8" maxlength="30"/>
+    </div>
+    <div class="field">
+      <label>SECTION</label>
+      <select id="section">
+        <option value="">Select section</option>
+        <option>A</option><option>B</option><option>C</option>
+        <option>D</option><option>E</option><option>F</option>
+      </select>
+    </div>
+    <button class="btn" onclick="goStep2()">Continue →</button>
+  </div>
+
+  <!-- STEP 2: Students Present -->
+  <div id="step2" style="display:none">
+    <div class="field">
+      <label>STUDENTS PRESENT TODAY</label>
+      <input id="studentCount" type="number" min="1" max="100" placeholder="e.g. 32"/>
+      <div class="hint">This helps track participation across sessions.</div>
+    </div>
+    <button class="btn" onclick="goStep3()">Generate Class Code →</button>
+  </div>
+
+  <!-- STEP 3: Confirm + Code -->
+  <div id="step3" style="display:none">
+    <div class="code-preview">
+      <div>
+        <div class="code-label">CLASS CODE — share with students</div>
+        <div class="code-value" id="codeDisplay">------</div>
+      </div>
+      <div style="font-size:1.8rem">🔑</div>
+    </div>
+
+    <div class="field">
+      <label>SUMMARY</label>
+      <div style="background:#f4f8fb;border-radius:12px;padding:14px;font-size:0.85rem;line-height:1.8;color:#4a6274;">
+        <span id="summaryText"></span>
+      </div>
+    </div>
+
+    <button class="btn" id="enterBtn" onclick="enterDashboard()">Enter Dashboard →</button>
+  </div>
+</div>
+
+<script type="module">
+import { db, auth } from "./firebase-config.js";
+import { doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+function setStep(n) {
+  document.getElementById("step1").style.display = n===1?"block":"none";
+  document.getElementById("step2").style.display = n===2?"block":"none";
+  document.getElementById("step3").style.display = n===3?"block":"none";
+  [1,2,3].forEach(i => {
+    const el = document.getElementById("s"+i);
+    el.classList.toggle("active", i===n);
+  });
+}
+
+function generateCode() {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let code = "";
+  for(let i=0;i<6;i++) code += chars[Math.floor(Math.random()*chars.length)];
+  return code;
+}
+
+async function isCodeTaken(code) {
+  const snap = await getDoc(doc(db, "classes", code));
+  return snap.exists();
+}
+
+window.goStep2 = function() {
+  const cn = document.getElementById("className").value.trim();
+  const sec = document.getElementById("section").value;
+  if(!cn) return alert("Please enter a class name.");
+  if(!sec) return alert("Please select a section.");
+  setStep(2);
+};
+
+window.goStep3 = async function() {
+  const count = document.getElementById("studentCount").value;
+  if(!count || count < 1) return alert("Please enter number of students.");
+
+  const btn = document.querySelector("#step2 .btn");
+  btn.disabled = true; btn.textContent = "Generating…";
+
+  try {
+    let code;
+    let exists = true;
+    while(exists) { code = generateCode(); exists = await isCodeTaken(code); }
+
+    const user = auth.currentUser;
+    const cn   = document.getElementById("className").value.trim();
+    const sec  = document.getElementById("section").value;
+
+    await setDoc(doc(db, "classes", code), {
+      className: cn,
+      section: sec,
+      studentCount: Number(count),
+      teacherUid: user.uid,
+      students: [],
+      createdAt: Date.now()
+    });
+
+    await updateDoc(doc(db, "users", user.uid), { classId: code });
+
+    // Store in sessionStorage for teacher.html to read
+    sessionStorage.setItem("classId",      code);
+    sessionStorage.setItem("className",    cn);
+    sessionStorage.setItem("section",      sec);
+    sessionStorage.setItem("studentCount", count);
+
+    document.getElementById("codeDisplay").textContent = code;
+    document.getElementById("summaryText").innerHTML =
+      `<b>${cn} – Section ${sec}</b><br>${count} students present<br>Code: <b>${code}</b>`;
+
+    setStep(3);
+  } catch(err) {
+    alert("Error: " + err.message);
+  } finally {
+    btn.disabled=false; btn.textContent="Generate Class Code →";
+  }
+};
+
+window.enterDashboard = function() {
+  window.location.href = "teacher.html";
+};
+</script>
+
+<script type="module" src="./auth-state.js"></script>
+</body>
+</html>

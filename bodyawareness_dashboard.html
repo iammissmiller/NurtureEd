@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NurtureEd - Scenarios</title>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", sans-serif;
+      }
+
+      body {
+        background: linear-gradient(135deg, #eafaf1, #e3f2fd);
+        color: #2c3e50;
+      }
+
+      /* BLOBS */
+      .blob {
+        position: fixed;
+        border-radius: 50%;
+        filter: blur(40px);
+        opacity: 0.5;
+      }
+
+      .blob1 {
+        width: 260px;
+        height: 260px;
+        background: #a8edea;
+        top: 10%;
+        left: 10%;
+      }
+
+      .blob2 {
+        width: 300px;
+        height: 300px;
+        background: #cfd9ff;
+        bottom: 10%;
+        right: 10%;
+      }
+
+      /* NAVBAR */
+      .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 30px;
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(10px);
+      }
+
+      .logo {
+        font-weight: 600;
+        color: #2c7a7b;
+      }
+
+      .back-btn {
+        padding: 8px 14px;
+        border-radius: 10px;
+        border: none;
+        background: #e8f7f6;
+        cursor: pointer;
+      }
+
+      /* CONTAINER */
+      .container {
+        width: 90%;                 /* responsive width */
+        max-width: 900px;           /* prevents too wide */
+        margin: 3% auto;            /* responsive vertical spacing */
+        padding: 2%;
+}
+
+      /* TITLE */
+      .title {
+       font-size: 1.6rem;
+       margin-bottom: 2%;
+}
+      /* SCENARIO GRID */
+      .scenario-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      /* CARD */
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2%;
+      }
+
+      .card {
+        background: rgba(255, 255, 255, 0.82);
+        border-radius: 18px;
+      padding: 2%;
+        cursor: pointer;
+        transition: 0.25s;
+        border: 2px solid transparent;
+      }
+
+      .card:hover {
+        border-color: #2c7a7b;
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+      }
+
+      .num {
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: #2c7a7b;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+      }
+
+      .title {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+
+      .desc {
+        font-size: 0.85rem;
+        color: #6b7c93;
+        line-height: 1.5;
+      }
+
+      .go {
+        margin-top: 12px;
+        font-size: 0.8rem;
+        color: #2c7a7b;
+        font-weight: 600;
+      }
+
+      .tag {
+        display: inline-block;
+        font-size: 0.65rem;
+        padding: 2px 8px;
+        border-radius: 999px;
+        background: #e8f7f6;
+        color: #2c7a7b;
+        margin-left: 6px;
+      }
+
+      /* SCENARIO VIEW */
+      .scenario-view {
+        display: none;
+        margin-top: 20px;
+        background: rgba(255, 255, 255, 0.75);
+        padding: 20px;
+        border-radius: 16px;
+      }
+
+      .options button {
+        display: block;
+        width: 100%;
+        margin: 8px 0;
+        padding: 10px;
+        border-radius: 10px;
+        border: none;
+        background: #f4f8fb;
+        cursor: pointer;
+      }
+
+      .options button:hover {
+        background: #a8edea;
+      }
+
+      .explanation {
+        margin-top: 15px;
+        font-size: 0.85rem;
+        color: #2c3e50;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="blob blob1"></div>
+    <div class="blob blob2"></div>
+
+    <!-- NAVBAR -->
+    <div class="navbar">
+      <div class="logo">NurtureEd</div>
+      <button class="back-btn" onclick="goBack()">⬅ Back to Dashboard</button>
+    </div>
+
+    <div class="container">
+      <div class="title">
+        <h1>Body Awareness</h1>
+        <p style="font-size: 0.9rem; color: #6b7c93; margin-top: 6px">
+          Understand your body, personal boundaries, and the changes that come with growing up.
+        </p>
+        <p style="font-size: 0.85rem; color: #8fa3b0">
+          Build confidence to respect yourself and others while making safe and informed choices.
+        </p><br>
+      </div> 
+
+      <div class="guide">
+        Select a scenario → discuss → guide students effectively
+      </div> <br><br>
+     
+      <!-- SCENARIO CARDS -->
+      <div class="grid">
+        <!-- SCENARIO 1 -->
+        <div class="card" onclick="window.location.href='scenario1.html'">
+          <div class="num">Scenario 01 </div>
+          <div class="title">Respect, Empathy, and Menstrual Awareness in School</div>
+          <div class="desc">
+           A girl experiences her first period and faces teasing from classmates. How should others respond with empathy and respect?
+          </div>
+          <div class="go">Continue →</div>
+        </div>
+
+        <!-- SCENARIO 2 -->
+        <div class="card" onclick="window.location.href='scenario2.html'">
+          <div class="num">Scenario 02 </div>
+          <div class="title">Puberty Awareness (Boys & Girls)</div>
+          <div class="desc">
+            Students notice changes in their body and feel confused or embarrassed. What is the right way to understand and handle these changes?
+          </div>
+          <div class="go">Continue →</div>
+        </div>
+
+        <!-- SCENARIO 3 -->
+        <div class="card" onclick="window.location.href='scenario3.html'">
+          <div class="num">Scenario 03 </div>
+          <div class="title">Hygiene & Self-Care Awareness</div>
+          <div class="desc">
+            A student is teased for not maintaining hygiene. How can classmates respond supportively while encouraging better habits?
+          </div>
+          <div class="go">Continue →</div>
+        </div>
+      </div>
+
+     
+
+    <script>
+      function goBack() {
+        window.location.href = "teacher.html";
+      }
+    </script>
+  </body>
+</html>

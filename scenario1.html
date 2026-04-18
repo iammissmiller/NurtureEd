@@ -169,7 +169,36 @@
         background: #edf2f7;
         cursor: pointer;
       }
-    </style>
+    
+      /* SPINNER */
+      .spinner {
+        width: 36px; height: 36px;
+        border: 3px solid #e0eaef;
+        border-top-color: #2c7a7b;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin: 0 auto;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+
+      /* REVIEW CARDS */
+      .review-card {
+        background: #f4f8fb;
+        border-radius: 14px;
+        padding: 16px;
+        margin-bottom: 14px;
+        border-left: 5px solid #ddd;
+      }
+      .review-card.best { border-left-color: #2c7a7b; }
+      .review-card.harmful { border-left-color: #e53e3e; }
+      .review-card h4 { margin-bottom:6px; font-size:0.95rem; }
+      .review-card p { font-size:0.85rem; color:#4a5568; line-height:1.6; }
+      .votes-bar-wrap { margin:8px 0 4px; }
+      .votes-label { font-size:0.72rem; color:#6b7c93; margin-bottom:4px; }
+      .votes-bar { height:8px; background:#e0eaef; border-radius:6px; }
+      .votes-fill { height:100%; border-radius:6px; background:#2c7a7b; transition:width 0.6s ease; }
+
+      </style>
   </head>
 
   <body>
@@ -178,7 +207,7 @@
         <!-- SCREEN 1 -->
         <div class="screen active" id="screen1">
           <img
-            src="./menstrual awareness.png"
+            src="./menstural_awareness.png"
           />
 
           <h2>Respect, Empathy, and Menstrual Awareness in School</h2>
@@ -328,6 +357,7 @@
           .querySelectorAll(".screen")
           .forEach((s) => s.classList.remove("active"));
         document.getElementById("screen" + n).classList.add("active");
+        if(n === 3) generateReview();
       }
 
       function change(i, val) {
@@ -346,8 +376,113 @@
 
       /* DASHBOARD NAV */
       function goDashboard() {
-        alert("Navigate to dashboard here");
+        window.location.href = "teacher.html";
       }
     </script>
+  
+    <script type="module">
+    const OPTIONS = [
+      { id: 0, label: "A. Ignore the situation and stay silent" },
+      { id: 1, label: "B. Join the boys to avoid feeling left out" },
+      { id: 2, label: "C. Support the girl and stop the boys politely" },
+      { id: 3, label: "D. Record and share the incident with others" }
+    ];
+
+    // Called when screen3 becomes active
+    window.generateReview = async function() {
+      const total = data.reduce((a,b) => a+b, 0);
+      if(total === 0) {
+        document.getElementById("reviewLoading").style.display = "none";
+        document.getElementById("reviewContent").style.display = "block";
+        document.getElementById("reviewContent").innerHTML =
+          "<p style=\'color:#6b7c93\'>No votes were recorded. Ask students to vote before submitting.</p>";
+        return;
+      }
+
+      const voteSummary = OPTIONS.map((o,i) =>
+        `${o.label}: ${data[i]} votes (${total ? Math.round(data[i]/total*100) : 0}%)`
+      ).join("\n");
+
+      try {
+        const res = await fetch("https://api.anthropic.com/v1/messages", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: "claude-sonnet-4-20250514",
+            max_tokens: 1000,
+            system: "You are an expert school educator and child safety facilitator. You help teachers debrief classroom scenario discussions in a supportive, age-appropriate way. Respond only in JSON.",
+            messages: [{
+              role: "user",
+              content: `A class of school students just discussed this scenario: "During a regular school day, boys mock a girl for starting her first period. Some classmates notice but feel unsure whether to step in."
+
+The class voted on what they would do:
+${voteSummary}
+
+The best answer is C. Support the girl and stop the boys politely.
+
+Respond ONLY with a JSON object in this exact format, no markdown:
+{
+  "summary": "2-sentence overview of how the class responded overall",
+  "options": [
+    { "label": "A. Ignore the situation and stay silent", "type": "harmful", "insight": "2-3 sentence explanation of why this is problematic, tailored to the vote count" },
+    { "label": "B. Join the boys to avoid feeling left out", "type": "harmful", "insight": "..." },
+    { "label": "C. Support the girl and stop the boys politely", "type": "best", "insight": "2-3 sentence explanation of why this is the right choice" },
+    { "label": "D. Record and share the incident with others", "type": "harmful", "insight": "..." }
+  ],
+  "teacherNote": "One practical suggestion for the teacher on how to continue this discussion"
+}`
+            }]
+          })
+        });
+
+        const apiData = await res.json();
+        const raw = apiData.content?.[0]?.text || "{}";
+        const parsed = JSON.parse(raw.replace(/```json|```/g, "").trim());
+
+        renderReview(parsed, data, total);
+      } catch(err) {
+        document.getElementById("reviewLoading").style.display = "none";
+        document.getElementById("reviewContent").style.display = "block";
+        document.getElementById("reviewContent").innerHTML =
+          `<p style="color:#c0392b">Could not generate AI review: ${err.message}</p>`;
+      }
+    };
+
+    function renderReview(parsed, votes, total) {
+      document.getElementById("reviewLoading").style.display = "none";
+      const el = document.getElementById("reviewContent");
+      el.style.display = "block";
+
+      const optionOrder = [2, 0, 1, 3]; // Show best answer first
+
+      let html = `<div style="background:#e8f7f6;border-radius:14px;padding:16px;margin-bottom:18px;font-size:0.88rem;color:#2c3e50;line-height:1.7;">
+        <b>Class Summary</b><br>${parsed.summary || ""}
+      </div>`;
+
+      optionOrder.forEach(i => {
+        const opt  = parsed.options?.[i] || {};
+        const pct  = total ? Math.round(votes[i]/total*100) : 0;
+        const type = i === 2 ? "best" : "harmful";
+        html += `
+        <div class="review-card ${type}">
+          <h4>${opt.label || OPTIONS[i].label}</h4>
+          <div class="votes-bar-wrap">
+            <div class="votes-label">${votes[i]} vote${votes[i]!==1?"s":""} · ${pct}% of class</div>
+            <div class="votes-bar"><div class="votes-fill" style="width:${pct}%"></div></div>
+          </div>
+          <p>${opt.insight || ""}</p>
+        </div>`;
+      });
+
+      if(parsed.teacherNote) {
+        html += `<div style="background:#fef9e7;border-radius:14px;padding:16px;margin-top:4px;font-size:0.85rem;color:#7d5a0a;line-height:1.6;">
+          <b>💡 For the teacher:</b> ${parsed.teacherNote}
+        </div>`;
+      }
+
+      el.innerHTML = html;
+    }
+    </script>
+
   </body>
 </html>

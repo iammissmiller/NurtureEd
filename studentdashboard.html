@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NurtureEd — Dashboard</title>
+  <link rel="stylesheet" href="student.css" />
+  <style>
+    /* ── Session summary states ── */
+    .summary-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 28px 0;
+      color: var(--text-muted);
+      text-align: center;
+    }
+    .empty-icon { font-size: 2rem; }
+    .empty-text { font-size: 0.875rem; }
+
+    .summary-loading {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 20px 0;
+      color: var(--text-muted);
+      font-size: 0.875rem;
+    }
+    .spin {
+      width: 20px; height: 20px;
+      border: 2px solid #e0eaef;
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      flex-shrink: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .summary-block {
+      font-size: 0.88rem;
+      color: var(--text);
+      line-height: 1.75;
+    }
+    .summary-block .summary-module {
+      display: inline-block;
+      background: rgba(44,122,123,0.10);
+      color: var(--primary);
+      border-radius: 6px;
+      padding: 2px 10px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    .summary-block p { margin-bottom: 8px; }
+    .summary-block ul {
+      margin: 6px 0 8px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    /* Class info strip */
+    .class-strip {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .class-strip-pill {
+      background: rgba(44,122,123,0.10);
+      color: var(--primary);
+      border-radius: 999px;
+      padding: 4px 14px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+    .class-strip-code {
+      background: #fef9e7;
+      color: #b7770d;
+      border-radius: 999px;
+      padding: 4px 14px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      font-family: monospace;
+    }
+
+    /* Session card container */
+    .session-card {
+      background: var(--surface);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      border: 1px solid rgba(255,255,255,0.6);
+      padding: 24px 26px;
+    }
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-title h3 {
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+    .section-title-icon {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      background: rgba(44,122,123,0.10);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+
+    /* Logout btn */
+    .logout-btn {
+      padding: 7px 14px;
+      border-radius: 10px;
+      border: none;
+      background: #fdecea;
+      color: #c0392b;
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: 0.2s;
+    }
+    .logout-btn:hover { background: #f5b7b1; }
+
+    /* Dashboard hero */
+    .dashboard-hero {
+      background: var(--surface);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      border: 1px solid rgba(255,255,255,0.6);
+      overflow: hidden;
+    }
+    .dashboard-greeting {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 28px 28px 22px;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .greeting-text .subtitle {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      display: block;
+      margin-bottom: 4px;
+    }
+    .greeting-text h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 4px;
+    }
+    .greeting-text .desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    .greeting-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    /* Main layout */
+    .dashboard-main {
+      flex: 1;
+      padding: 28px 0 48px;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 28px;
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-mesh"></div>
+  <div class="page-wrapper">
+
+    <!-- ── Navbar ── -->
+    <nav class="navbar">
+      <a class="navbar-brand" href="index.html">
+        <div class="navbar-logo">N</div>
+        <span class="navbar-name">NurtureEd</span>
+      </a>
+      <div class="navbar-actions">
+        <div class="class-strip">
+          <span class="class-strip-pill" id="navClass">–</span>
+          <span class="class-strip-code" id="navCode">–</span>
+        </div>
+        <div class="navbar-user">
+          <div class="avatar" id="navAvatar">SU</div>
+          <span class="navbar-username" id="navUser">Student</span>
+        </div>
+        <button class="logout-btn" id="logoutBtn">🚪 Logout</button>
+      </div>
+    </nav>
+
+    <!-- ── Main ── -->
+    <main class="dashboard-main">
+      <div class="container">
+        <div class="dash-stack">
+
+          <!-- Greeting -->
+          <section class="dashboard-hero animate-fade-up anim-delay-1">
+            <div class="dashboard-greeting">
+              <div class="greeting-text">
+                <span class="subtitle" id="greetingSubtitle">Good morning</span>
+                <h1 id="greetingName">Welcome back 👋</h1>
+                <p class="desc">Here's what's happening in your learning journey today.</p>
+              </div>
+              <div class="greeting-actions">
+                <button class="btn btn-secondary" onclick="switchClass()">
+                  ← Switch Class
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- Chatbot banner -->
+          <div class="chatbot-banner animate-fade-up anim-delay-2">
+            <div class="chatbot-banner-left">
+              <div class="chatbot-banner-icon">🤖</div>
+              <div>
+                <div class="chatbot-banner-title">Private Chatbot</div>
+                <div class="chatbot-banner-sub">Ask anything safely — your conversation is private.</div>
+              </div>
+            </div>
+            <button class="btn chatbot-launch-btn" id="chatToggleBtn" onclick="toggleChat()">
+              Open Chatbot →
+            </button>
+          </div>
+
+          <!-- Inline Chatbot (hidden by default) -->
+          <div id="chatSection" style="display:none;" class="session-card animate-fade-up">
+            <div class="section-header" style="margin-bottom:14px;">
+              <div class="section-title">
+                <div class="section-title-icon">💬</div>
+                <h3>Private Chat</h3>
+              </div>
+              <button class="btn btn-secondary" style="padding:6px 12px;font-size:0.8rem;"
+                onclick="toggleChat()">Close</button>
+            </div>
+            <div id="chatbox" style="height:220px;overflow-y:auto;background:rgba(244,248,251,0.8);
+              border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px;margin-bottom:12px;">
+              <div style="background:white;border:1px solid var(--border);border-radius:10px;
+                padding:10px 14px;font-size:0.85rem;max-width:85%;line-height:1.5;">
+                Hi! I'm here to help you safely. Ask me anything — it's completely private. 💚
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <input id="chatInput" style="flex:1;padding:11px 14px;border:1.5px solid var(--border);
+                border-radius:10px;font-size:0.85rem;font-family:var(--font);outline:none;background:#f7fbfc;"
+                placeholder="Type your question…"
+                onkeydown="if(event.key==='Enter')sendChat()"
+                onfocus="this.style.borderColor='var(--primary)'"
+                onblur="this.style.borderColor='var(--border)'"/>
+              <button class="btn btn-primary" style="padding:10px 18px;" onclick="sendChat()">Send</button>
+            </div>
+          </div>
+
+          <!-- Session Summary -->
+          <div class="session-card animate-fade-up anim-delay-3">
+            <div class="section-header">
+              <div class="section-title">
+                <div class="section-title-icon">📝</div>
+                <h3>Today's Session Summary</h3>
+              </div>
+              <span class="badge badge-accent" id="liveBadge" style="display:none;">● Live</span>
+            </div>
+            <div class="divider"></div>
+            <div id="summaryContainer">
+              <div class="summary-empty">
+                <div class="empty-icon">📋</div>
+                <p class="empty-text">No active session yet. Your teacher needs to start a module first.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Anonymous Question -->
+          <div class="session-card anon-card animate-fade-up anim-delay-4">
+            <div class="section-header">
+              <div class="section-title">
+                <div class="section-title-icon anon-icon">🕵️</div>
+                <h3>Ask Anonymously</h3>
+              </div>
+              <span class="badge badge-anon">Private</span>
+            </div>
+            <div class="divider"></div>
+            <p class="anon-desc">
+              Have a question you're hesitant to ask out loud? Send it here —
+              your name stays completely hidden from everyone, including your teacher.
+            </p>
+            <div class="anon-form">
+              <textarea id="anonQuestion" class="anon-textarea"
+                placeholder="Type your question… it will be sent anonymously to your teacher."
+                rows="3"></textarea>
+              <button class="btn btn-anon" onclick="submitAnonQuestion()">
+                Send Anonymously 🕵️
+              </button>
+            </div>
+            <div id="anonSuccess" class="anon-success" style="display:none;">
+              ✅ Your question was sent anonymously to the teacher!
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script type="module">
+    import { db, auth } from "./firebase-config.js";
+    import {
+      doc, getDoc, addDoc, collection, serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { logoutUser } from "./auth.js";
+
+    // ── Restore session data ──────────────────────────────────────
+    const studentName  = sessionStorage.getItem("studentName")  || "Student";
+    const classCode    = sessionStorage.getItem("classCode")    || "";
+    const className    = sessionStorage.getItem("className")    || "";
+    const section      = sessionStorage.getItem("section")      || "";
+    const activeModule = sessionStorage.getItem("activeModule") || "";
+    const teacherUid   = sessionStorage.getItem("teacherUid")   || "";
+
+    // Navbar & greeting
+    document.getElementById("navUser").textContent   = studentName;
+    document.getElementById("navAvatar").textContent =
+      studentName.split(" ").map(w => w[0]).join("").slice(0,2).toUpperCase();
+    document.getElementById("navClass").textContent  =
+      className ? `${className} – Sec ${section}` : "–";
+    document.getElementById("navCode").textContent   = classCode || "–";
+    document.getElementById("greetingName").textContent = `Welcome back, ${studentName.split(" ")[0]} 👋`;
+
+    const hour = new Date().getHours();
+    document.getElementById("greetingSubtitle").textContent =
+      hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+
+    // ── If no classCode, send back to join ───────────────────────
+    if (!classCode) {
+      window.location.href = "student.html";
+    }
+
+    // ── Logout ───────────────────────────────────────────────────
+    document.getElementById("logoutBtn").onclick = async () => {
+      const { logoutUser } = await import("./auth.js");
+      await logoutUser();
+      sessionStorage.clear();
+      window.location.href = "login.html";
+    };
+
+    // ── Switch class ─────────────────────────────────────────────
+    window.switchClass = function() {
+      sessionStorage.removeItem("classCode");
+      sessionStorage.removeItem("className");
+      sessionStorage.removeItem("section");
+      sessionStorage.removeItem("activeModule");
+      window.location.href = "student.html";
+    };
+
+    // ── Load session summary from Firestore + LLM ────────────────
+    async function loadSummary() {
+      if (!classCode) return;
+
+      const container = document.getElementById("summaryContainer");
+      const liveBadge = document.getElementById("liveBadge");
+
+      // Fetch latest class state from Firestore
+      const classSnap = await getDoc(doc(db, "classes", classCode));
+      if (!classSnap.exists()) return;
+
+      const classData    = classSnap.data();
+      const moduleActive = classData.activeModule || activeModule;
+
+      if (!moduleActive) {
+        // No module running yet — show empty state
+        return;
+      }
+
+      // Show loading
+      liveBadge.style.display = "inline-flex";
+      container.innerHTML = `
+        <div class="summary-loading">
+          <div class="spin"></div>
+          <span>Generating your session summary…</span>
+        </div>`;
+
+      const moduleLabels = {
+        body:     "Body Awareness",
+        digital:  "Digital Safety",
+        personal: "Personal Safety"
+      };
+      const moduleName = moduleLabels[moduleActive] || moduleActive;
+
+      try {
+        const res = await fetch("https://api.anthropic.com/v1/messages", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: "claude-sonnet-4-20250514",
+            max_tokens: 1000,
+            system: `You are a helpful, age-appropriate learning assistant inside NurtureEd, 
+              a school safety education platform. Write concise, encouraging session summaries 
+              for students aged 10–16. Use simple language. Respond ONLY in JSON, no markdown.`,
+            messages: [{
+              role: "user",
+              content: `A student just attended a NurtureEd session on the module: "${moduleName}".
+Class: ${className} Section ${section}.
+
+Generate a short session summary for this student.
+Respond ONLY with this JSON (no markdown backticks):
+{
+  "module": "${moduleName}",
+  "headline": "One encouraging sentence about what they covered today",
+  "keyPoints": ["point 1", "point 2", "point 3"],
+  "takeaway": "One sentence on what they should remember"
+}`
+            }]
+          })
+        });
+
+        const data   = await res.json();
+        const raw    = data.content?.[0]?.text || "{}";
+        const parsed = JSON.parse(raw.replace(/```json|```/g, "").trim());
+
+        container.innerHTML = `
+          <div class="summary-block">
+            <span class="summary-module">📚 ${parsed.module}</span>
+            <p><strong>${parsed.headline}</strong></p>
+            <p style="color:var(--text-muted);font-size:0.82rem;margin-bottom:4px;">Key things you explored:</p>
+            <ul>${(parsed.keyPoints || []).map(p => `<li>${p}</li>`).join("")}</ul>
+            <p style="background:rgba(44,122,123,0.07);border-radius:8px;padding:10px 14px;
+              color:var(--primary-dark);font-size:0.85rem;">
+              💡 <strong>Remember:</strong> ${parsed.takeaway}
+            </p>
+          </div>`;
+
+      } catch(err) {
+        container.innerHTML = `
+          <p style="color:#c0392b;font-size:0.85rem;">
+            Could not load summary right now. Try refreshing.
+          </p>`;
+      }
+    }
+
+    loadSummary();
+
+    // ── Anonymous question → Firestore ───────────────────────────
+    window.submitAnonQuestion = async function() {
+      const textarea = document.getElementById("anonQuestion");
+      const q = textarea.value.trim();
+      if (!q) return;
+
+      try {
+        await addDoc(collection(db, "classes", classCode, "questions"), {
+          question:    q,
+          classCode,
+          timestamp:   serverTimestamp(),
+          status:      "new"
+          // deliberately NO student name or uid — stays anonymous
+        });
+        textarea.value = "";
+        const success = document.getElementById("anonSuccess");
+        success.style.display = "block";
+        setTimeout(() => { success.style.display = "none"; }, 4000);
+      } catch(err) {
+        alert("Could not send question: " + err.message);
+      }
+    };
+
+    // ── Chatbot ──────────────────────────────────────────────────
+    window.toggleChat = function() {
+      const section = document.getElementById("chatSection");
+      const btn     = document.getElementById("chatToggleBtn");
+      const open    = section.style.display === "none";
+      section.style.display = open ? "block" : "none";
+      btn.textContent        = open ? "Close Chatbot ✕" : "Open Chatbot →";
+    };
+
+    window.sendChat = async function() {
+      const input   = document.getElementById("chatInput");
+      const chatbox = document.getElementById("chatbox");
+      const msg     = input.value.trim();
+      if (!msg) return;
+      input.value = "";
+
+      const userDiv = document.createElement("div");
+      userDiv.style = "background:var(--primary);color:white;border-radius:10px;padding:10px 14px;font-size:0.85rem;max-width:85%;align-self:flex-end;line-height:1.5;";
+      userDiv.textContent = msg;
+      chatbox.appendChild(userDiv);
+
+      const thinkDiv = document.createElement("div");
+      thinkDiv.style = "background:white;border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-size:0.85rem;max-width:85%;line-height:1.5;";
+      thinkDiv.textContent = "…";
+      chatbox.appendChild(thinkDiv);
+      chatbox.scrollTop = chatbox.scrollHeight;
+
+      try {
+        const res = await fetch("https://api.anthropic.com/v1/messages", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: "claude-sonnet-4-20250514",
+            max_tokens: 1000,
+            system: `You are a safe, supportive, age-appropriate assistant inside NurtureEd, 
+              a school safety education platform for students aged 10–16. Help them understand 
+              topics like body safety, digital safety, and personal boundaries. Never share 
+              anything graphic or inappropriate. If a student seems distressed, gently 
+              encourage them to speak with a trusted adult or teacher.`,
+            messages: [{ role: "user", content: msg }]
+          })
+        });
+        const data = await res.json();
+        thinkDiv.textContent = data.content?.[0]?.text || "I'm here to help!";
+      } catch(err) {
+        thinkDiv.textContent = "Sorry, I couldn't respond right now. Please try again.";
+      }
+      chatbox.scrollTop = chatbox.scrollHeight;
+    };
+
+  </script>
+
+  <script type="module" src="./auth-state.js"></script>
+</body>
+</html>
