@@ -1,7 +1,8 @@
 import { auth, db } from "./firebase-config.js";
 import {
   createUserWithEmailAndPassword,
-  signInWithEmailAndPassword
+  signInWithEmailAndPassword,
+  signOut
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 import {
@@ -24,4 +25,8 @@ export async function registerUser(name, email, password) {
 
 export async function loginUser(email, password) {
   await signInWithEmailAndPassword(auth, email, password);
+}
+
+export async function logoutUser() {
+  await signOut(auth);
 }
