@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NurtureEd • Scenario Flow</title>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      body {
+        background: linear-gradient(135deg, #eafaf1, #e3f2fd);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        color: #2c3e50;
+      }
+
+      .container {
+        display: flex;
+        justify-content: center;
+        padding: 40px 20px;
+      }
+
+      /* WIDER CARD */
+      .card {
+        width: 100%;
+        max-width: 1000px;
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(14px);
+        padding: 32px;
+        border-radius: 24px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
+      }
+
+      /* SCREENS */
+      .screen {
+        display: none;
+      }
+      .screen.active {
+        display: block;
+        animation: fade 0.5s ease;
+      }
+
+      @keyframes fade {
+        from {
+          opacity: 0;
+          transform: translateY(15px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* BIGGER IMAGE */
+      img {
+        width: 100%;
+        height: 340px;
+        object-fit: cover;
+        border-radius: 16px;
+        margin-bottom: 20px;
+      }
+
+      h2 {
+        margin-bottom: 10px;
+      }
+
+      .desc {
+        color: #6b7c93;
+        margin-bottom: 20px;
+        line-height: 1.6;
+      }
+
+      /* BUTTONS */
+      .main-btn {
+        width: 100%;
+        padding: 14px;
+        background: #2c7a7b;
+        color: white;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+      }
+
+      /* BACK BUTTON */
+      .back {
+        margin-bottom: 20px;
+        cursor: pointer;
+        color: #2c7a7b;
+        font-weight: 500;
+      }
+
+      /* OPTION BLOCK */
+      .option-block {
+        margin-bottom: 16px;
+        background: rgba(255, 255, 255, 0.95);
+        padding: 16px;
+        border-radius: 14px;
+      }
+
+      /* FLEX FIX */
+      .option-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .option-text {
+        font-weight: 500;
+      }
+
+      /* RIGHT-ALIGNED COUNTER */
+      .counter {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .counter button {
+        width: 32px;
+        height: 32px;
+        border: none;
+        border-radius: 8px;
+        background: #e6fffa;
+        cursor: pointer;
+      }
+
+      .bar {
+        height: 8px;
+        background: #eee;
+        margin-top: 10px;
+        border-radius: 10px;
+      }
+
+      .fill {
+        height: 100%;
+        width: 0%;
+        background: #2c7a7b;
+        border-radius: 10px;
+      }
+
+      /* REVIEW */
+      .insight {
+        background: #f0fdfc;
+        padding: 16px;
+        border-radius: 14px;
+        margin-bottom: 14px;
+      }
+
+      .correct {
+        border-left: 5px solid #2c7a7b;
+      }
+      .wrong {
+        border-left: 5px solid #e53e3e;
+      }
+
+      /* DASHBOARD BTN */
+      .dashboard-btn {
+        margin-top: 20px;
+        text-align: center;
+        padding: 12px;
+        border-radius: 12px;
+        background: #edf2f7;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="card">
+        <!-- SCREEN 1 -->
+        <div class="screen active" id="screen1">
+          <img
+            src="./menstural_awareness.png"
+          />
+
+          <h2>Respect, Empathy, and Menstrual Awareness in School</h2>
+          <p class="desc">
+            During a regular school day, a group of boys overhear that a girl in
+            their class has started her first period. Instead of being
+            supportive, they begin whispering, laughing, and making insensitive
+            jokes. The girl feels embarrassed, anxious, and avoids participating
+            in class activities. Some classmates notice what’s happening but
+            feel unsure whether to step in or stay silent. <br><br>
+            
+            The teacher is not present at that moment, and the classroom environment becomes
+            uncomfortable. This situation reflects a lack of awareness and
+            respect for natural biological processes, affecting not only the
+            girl’s confidence but also the overall class atmosphere. 
+          </p>
+
+          <button class="main-btn" onclick="next(2)">Start Discussion</button>
+        </div>
+
+        <!-- SCREEN 2 -->
+        <div class="screen" id="screen2">
+          <div class="back" onclick="next(1)">← Back</div>
+
+          <h2>If you were in this situation, what would you do?</h2>
+
+          <!-- OPTION -->
+          <div class="option-block">
+            <div class="option-row">
+              <div class="option-text">
+                A. Ignore the situation and stay silent
+              </div>
+              <div class="counter">
+                <button onclick="change(0, -1)">−</button>
+                <span id="c0">0</span>
+                <button onclick="change(0, 1)">+</button>
+              </div>
+            </div>
+            <div class="bar"><div class="fill" id="f0"></div></div>
+          </div>
+
+          <div class="option-block">
+            <div class="option-row">
+              <div class="option-text">
+                B. Join the boys to avoid feeling left out
+              </div>
+              <div class="counter">
+                <button onclick="change(1, -1)">−</button>
+                <span id="c1">0</span>
+                <button onclick="change(1, 1)">+</button>
+              </div>
+            </div>
+            <div class="bar"><div class="fill" id="f1"></div></div>
+          </div>
+
+          <div class="option-block">
+            <div class="option-row">
+              <div class="option-text">
+                C. Support the girl and stop the boys politely
+              </div>
+              <div class="counter">
+                <button onclick="change(2, -1)">−</button>
+                <span id="c2">0</span>
+                <button onclick="change(2, 1)">+</button>
+              </div>
+            </div>
+            <div class="bar"><div class="fill" id="f2"></div></div>
+          </div>
+
+          <div class="option-block">
+            <div class="option-row">
+              <div class="option-text">
+                D.Record and share the incident with others
+              </div>
+              <div class="counter">
+                <button onclick="change(3, -1)">−</button>
+                <span id="c3">0</span>
+                <button onclick="change(3, 1)">+</button>
+              </div>
+            </div>
+            <div class="bar"><div class="fill" id="f3"></div></div>
+          </div>
+
+          <button class="main-btn" onclick="next(3)">Submit & Review</button>
+        </div>
+
+        <!-- SCREEN 3 -->
+        <div class="screen" id="screen3">
+          <h2>Review & Insights</h2>
+
+          <div class="insight correct">
+            <b>C. Support the girl and stop the boys politely</b>
+            <p>
+              Supporting the girl and calmly stopping the boys is the most
+              responsible choice. It shows empathy, awareness, and courage. This
+              action helps create a safe and respectful environment, encourages
+              others to behave better, and ensures that no one feels ashamed of
+              a natural biological process.
+            </p>
+          </div>
+
+          <div class="insight wrong">
+            <b>A.Ignore the situation and stay silent</b>
+            <p>
+              Ignoring the situation may feel safe, but it allows disrespectful
+              behavior to continue. Silence can indirectly support bullying and
+              make the affected student feel isolated. Taking no action means
+              missing the chance to stand up for what is right and create a
+              respectful classroom environment.
+            </p>
+          </div>
+
+          <div class="insight wrong">
+            <b>B. Join the boys to avoid feeling left out</b>
+            <p>
+              Joining the boys might help you fit in temporarily, but it
+              contributes to emotional harm. Making fun of someone for a natural
+              process like menstruation shows a lack of maturity and awareness.
+              It can damage the girl’s confidence and normalize insensitive
+              behavior among classmates.
+            </p>
+          </div>
+
+          <div class="insight wrong">
+            <b>D. Record and share the incident with others</b>
+            <p>
+              Recording and sharing the incident violates the girl’s privacy and
+              increases her embarrassment. Instead of helping, it spreads the
+              situation further and may lead to cyberbullying. Responsible
+              behavior means protecting someone’s dignity, not exposing them
+              during a vulnerable moment.
+            </p>
+          </div>
+
+          <div class="dashboard-btn" onclick="goDashboard()">
+            ← Back to Dashboard
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let data = [0, 0, 0, 0];
+
+      function next(n) {
+        document
+          .querySelectorAll(".screen")
+          .forEach((s) => s.classList.remove("active"));
+        document.getElementById("screen" + n).classList.add("active");
+      }
+
+      function change(i, val) {
+        data[i] = Math.max(0, data[i] + val);
+        document.getElementById("c" + i).innerText = data[i];
+        update();
+      }
+
+      function update() {
+        let total = data.reduce((a, b) => a + b, 0);
+        data.forEach((v, i) => {
+          let p = total ? (v / total) * 100 : 0;
+          document.getElementById("f" + i).style.width = p + "%";
+        });
+      }
+
+      /* DASHBOARD NAV */
+      function goDashboard() {
+        window.location.href = "teacher.html";
+      }
+    </script>
+  </body>
+</html>

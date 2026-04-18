@@ -208,7 +208,7 @@ body {
 <!-- NAVBAR -->
 <div class="navbar">
   <div class="logo">NurtureEd</div>
-  <button class="login-btn">Login</button>
+  <button class="login-btn" onclick="goToLogin()">Login</button>
 </div>
 
 <!-- HERO -->
@@ -246,14 +246,21 @@ body {
 </div>
 
 <script>
+function goToLogin() {
+  window.location.href = "login.html";
+}
 function goToTeacher() {
-  window.location.href = "teacher.html";
+  window.location.href = "login.html";
 }
 
 function goToStudent() {
-  window.location.href = "student.html";
+  window.location.href = "login.html";
 }
 </script>
-
+  <script type="module">
+    import { auth } from "./firebase-config.js";
+    console.log("Firebase loaded:", auth);
+  </script>
+  <script type="module" src="./auth-state.js"></script>
 </body>
 </html>

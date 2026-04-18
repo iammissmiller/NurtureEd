@@ -81,6 +81,21 @@ body {
   font-size: 0.7rem;
 }
 
+.logout-btn {
+  padding: 7px 14px;
+  border-radius: 10px;
+  border: none;
+  background: #fdecea;
+  color: #c0392b;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: 0.2s;
+}
+.logout-btn:hover {
+  background: #f5b7b1;
+  transform: translateY(-1px);
+}
+
 /* HERO */
 .hero {
   max-width: 1100px;
@@ -232,6 +247,73 @@ body {
   color: #6b7c93;
 }
 
+/* CLASS CREATION */
+.class-create-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.class-create-row input {
+  padding: 9px 14px;
+  border: 1.5px solid #d0e8e8;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  outline: none;
+  background: #f8fbfc;
+  flex: 1;
+  min-width: 160px;
+  transition: border 0.2s;
+}
+
+.class-create-row input:focus {
+  border-color: #2c7a7b;
+  background: white;
+}
+
+.class-create-row button {
+  padding: 9px 18px;
+  border-radius: 10px;
+  border: none;
+  background: #2c7a7b;
+  color: white;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: 0.2s;
+  white-space: nowrap;
+}
+
+.class-create-row button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(44,122,123,0.2);
+}
+
+.class-create-row button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+#classCodeDisplay {
+  margin-top: 10px;
+  font-size: 0.85rem;
+  color: #2c3e50;
+  line-height: 1.7;
+}
+
+.class-code-badge {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 6px 18px;
+  background: #a8edea;
+  color: #05595b;
+  border-radius: 999px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+}
+
 /* MOBILE */
 @media (max-width: 800px) {
   .grid {
@@ -252,6 +334,7 @@ body {
   <div class="nav-right">
     <div class="class-info">Grade 8A • NE-204</div>
     <div id="sessionPill" class="session-pill">Not Started</div>
+    <button class="logout-btn" id="logoutBtn">🚪 Logout</button>
   </div>
 </div>
 
@@ -259,9 +342,15 @@ body {
 <div class="hero">
   <div>
     <h2>Welcome back</h2>
-    <p>Start a session or address student concerns</p>
+    <p>Create a class or address student concerns</p>
   </div>
-  <button class="primary-btn" onclick="startSession()">Start Session</button>
+  <div>
+    <div class="class-create-row">
+      <input id="className" type="text" placeholder="Class name e.g. Grade 8A" />
+      <button id="createClassBtn" onclick="createClass()">+ Create Class</button>
+    </div>
+    <div id="classCodeDisplay"></div>
+  </div>
 </div>
 
 <div class="container">
@@ -295,7 +384,7 @@ body {
           <div class="module-desc">Online risks</div>
         </div>
 
-        <div class="module" onclick="startModule(this,'Body Awareness')">
+        <div class="module" onclick="startModule(this,'Body Awareness'); window.location.href='scenario1.html'">
           <div class="module-icon">🧍</div>
           <div class="module-title">Body Awareness</div>
           <div class="module-desc">Boundaries</div>
@@ -352,10 +441,18 @@ function startSession() {
   document.getElementById("sessionPill").innerText = "Session Started";
 }
 
+const MODULE_ROUTES = {
+  "Body Awareness": "scenario1.html",
+};
+
 function startModule(el, name) {
   document.querySelectorAll(".module").forEach(m => m.style.border = "none");
   el.style.border = "2px solid #2c7a7b";
   document.getElementById("sessionPill").innerText = "Active: " + name;
+
+  if (MODULE_ROUTES[name]) {
+    window.location.href = MODULE_ROUTES[name];
+  }
 }
 
 function discuss() {
@@ -366,6 +463,20 @@ function markDone(btn) {
   btn.closest(".question").style.opacity = "0.5";
 }
 </script>
+<script type="module" src="./auth-state.js"></script>
+<script type="module" src="./class.js"></script>
+<script type="module">
+  import { logoutUser } from "./auth.js";
 
+  document.getElementById("logoutBtn").onclick = async () => {
+    try {
+      await logoutUser();
+      window.location.href = "login.html";
+    } catch (err) {
+      console.error("Logout failed:", err);
+      alert("Logout failed: " + err.message);
+    }
+  };
+</script>
 </body>
 </html>
